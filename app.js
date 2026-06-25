@@ -2,10 +2,6 @@ if (process.env.NODE_ENV != "production") {
   require("dotenv").config();
 }
 
-//dns-fix
-//const dns = require("dns");
-//dns.setServers(["8.8.8.8", "1.1.1.1"]);
-
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -36,7 +32,7 @@ main()
   });
 
 async function main() {
-  await mongoose.connect(dbUrl); //pass (dbUrl) instead of (MONGO_URL)
+  await mongoose.connect(dbUrl); // dbUrl / MONGO_URL
 }
 
 app.use(express.json());
@@ -45,7 +41,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
-app.use(express.static(path.join(__dirname, "/public")));
+app.use(express.static(path.join(__dirname, "public")));
 
 const store = MongoStore.create({
   mongoUrl: dbUrl,
@@ -72,7 +68,7 @@ const sessionOptions = {
 };
 
 app.get("/", (req, res) => {
-  res.send("StayNest is running!");
+  res.redirect("/listings");
 });
 
 app.use(session(sessionOptions));
@@ -80,8 +76,8 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
 
+passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
